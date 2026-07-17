@@ -1,0 +1,993 @@
+/* ============================================================
+   Ember & Oak — candlelit palette + scrollytelling styles
+   ============================================================ */
+:root {
+  --ink: #f4e8d6;
+  --ink-dim: #b9a488;
+  --bg-0: #140d08; /* deepest night */
+  --bg-1: #1f1710;
+  --bg-2: #2a1f15;
+  --ember: #ff7a1a;
+  --ember-soft: #ffb45c;
+  --gold: #ffd58a;
+  --wax: #e7c9a0;
+  --line: rgba(244, 232, 214, 0.12);
+  --glow: 0 0 40px rgba(255, 140, 40, 0.55);
+  --serif: Georgia, 'Times New Roman', serif;
+  --sans: 'Helvetica Neue', Arial, system-ui, sans-serif;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --nav-h: 64px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+body {
+  margin: 0;
+  background: var(--bg-0);
+  color: var(--ink);
+  font-family: var(--sans);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.has-fire-cursor,
+.has-fire-cursor a,
+.has-fire-cursor button {
+  cursor: none;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--serif);
+  font-weight: 400;
+  line-height: 1.08;
+  margin: 0;
+}
+
+.eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--ember-soft);
+  margin: 0 0 1rem;
+}
+
+main {
+  position: relative;
+}
+
+.section {
+  position: relative;
+  padding: clamp(3rem, 8vw, 7rem) clamp(1.25rem, 5vw, 5rem);
+}
+
+/* ============================================================
+   SMOKE TRAIL — winds from page top down to the closing candle
+   ============================================================ */
+.smoke-trail {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 6; /* above section backgrounds, below nav/cursor */
+  pointer-events: none;
+}
+.smoke-trail svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.smoke-trail__layer--a {
+  animation: smokesway 11s ease-in-out infinite alternate;
+}
+.smoke-trail__layer--b {
+  animation: smokesway 7.5s ease-in-out infinite alternate-reverse;
+}
+.smoke-trail__layer--c {
+  animation: smokesway 5.5s ease-in-out infinite alternate;
+}
+@keyframes smokesway {
+  from { transform: translateX(-8px) translateY(-3px); }
+  to { transform: translateX(8px) translateY(3px); }
+}
+
+/* ============================================================
+   LOADER
+   ============================================================ */
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 50% 60%, var(--bg-2), var(--bg-0) 70%);
+  transition: opacity 0.7s var(--ease), visibility 0.7s;
+}
+.loader.is-done {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.loader__inner {
+  text-align: center;
+}
+.loader__candle {
+  width: 40px;
+  height: 120px;
+  margin: 0 auto 1.5rem;
+  border-radius: 8px 8px 4px 4px;
+  background: linear-gradient(var(--wax), #cba871);
+  position: relative;
+}
+.loader__candle::before {
+  /* wick */
+  content: '';
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  width: 3px;
+  height: 16px;
+  background: #6b6b6b;
+  transform: translateX(-50%);
+}
+.loader__candle::after {
+  /* flame, hidden until ignite */
+  content: '';
+  position: absolute;
+  top: -44px;
+  left: 50%;
+  width: 18px;
+  height: 34px;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  background: radial-gradient(circle at 50% 65%, #fff6df, var(--ember) 70%);
+  transform: translateX(-50%) scale(0);
+  transform-origin: bottom;
+  transition: transform 0.5s var(--ease);
+  box-shadow: var(--glow);
+}
+.loader.is-ignited .loader__candle::after {
+  transform: translateX(-50%) scale(1);
+}
+.loader.is-ignited .loader__candle::before {
+  background: #3a2a1a;
+}
+.loader__count {
+  font-family: var(--serif);
+  font-size: 3.5rem;
+  color: var(--gold);
+}
+.loader__pctmark {
+  font-size: 1.4rem;
+  color: var(--ink-dim);
+}
+.loader__label {
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  color: var(--ink-dim);
+}
+
+/* ============================================================
+   FIRE CURSOR
+   ============================================================ */
+.fire-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9000;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+  will-change: transform;
+}
+.fire-cursor.is-active {
+  opacity: 1;
+}
+.fire-cursor__flame {
+  position: absolute;
+  width: 26px;
+  height: 40px;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+  filter: drop-shadow(0 0 6px rgba(255, 150, 40, 0.9));
+}
+.fire-cursor__flame svg {
+  width: 100%;
+  height: 100%;
+}
+.fire-cursor__glow {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(255, 140, 40, 0.28), transparent 65%);
+  border-radius: 50%;
+}
+
+/* ============================================================
+   CANDLE (shared component)
+   ============================================================ */
+.candle {
+  --candle-scale: 1;
+  position: absolute;
+  transform: scale(var(--candle-scale));
+  transform-origin: bottom center;
+  transition: filter 0.6s var(--ease);
+  filter: brightness(0.72) saturate(0.7);
+}
+.candle__svg {
+  display: block;
+  overflow: visible;
+}
+.candle .candle__flame {
+  transform-origin: 50% 100%;
+  transition: opacity 0.35s var(--ease);
+}
+.candle.is-lit {
+  filter: brightness(1.08) saturate(1.05);
+}
+.candle.is-lit .candle__flame {
+  opacity: 1 !important;
+  animation: flameflicker 1.6s ease-in-out infinite;
+}
+.candle.is-lit .candle__glow {
+  opacity: 0.6 !important;
+  animation: glowbreathe 2.4s ease-in-out infinite;
+}
+.candle.is-snuffed .candle__flame {
+  opacity: 0 !important;
+  transform: translateY(-8px) scaleY(0.3);
+}
+@keyframes flameflicker {
+  0%, 100% { transform: scaleY(1) scaleX(1); }
+  25% { transform: scaleY(1.08) scaleX(0.96) rotate(1.5deg); }
+  60% { transform: scaleY(0.94) scaleX(1.03) rotate(-1.5deg); }
+}
+@keyframes glowbreathe {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.7; }
+}
+
+/* ---- image candle (real artwork) + realistic flame ---- */
+.candle--image {
+  left: 50%;
+  bottom: 6%;
+  transform: translateX(-50%);
+  width: clamp(300px, 40vw, 520px);
+  filter: brightness(0.82) saturate(0.85);
+}
+.candle--image.is-lit {
+  filter: brightness(1.05) saturate(1.05);
+}
+.candle--image__img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2; /* reserves layout before the image loads so the wick/smoke anchor is stable */
+  display: block;
+  user-select: none;
+  /* melt the artwork's grey backdrop into the dark scene */
+  -webkit-mask-image: radial-gradient(ellipse 60% 56% at 50% 55%, #000 42%, transparent 74%);
+  mask-image: radial-gradient(ellipse 60% 56% at 50% 55%, #000 42%, transparent 74%);
+}
+.candle__wickzone {
+  position: absolute;
+  width: 14px;
+  height: 30px;
+  transform: translate(-50%, -100%);
+  /* invisible — exists purely as the ignition hot-zone + smoke anchor */
+}
+
+.flame {
+  position: absolute;
+  width: 48px;
+  height: 86px;
+  opacity: 0;
+  transition: opacity 0.45s var(--ease);
+  transform-origin: 50% 100%;
+  pointer-events: none;
+}
+.candle--image.is-lit .flame {
+  opacity: 1;
+}
+.candle--image.is-snuffed .flame {
+  opacity: 0 !important;
+}
+.flame__outer,
+.flame__mid,
+.flame__core {
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  transform-origin: 50% 100%;
+  border-radius: 50% 0 50% 50%;
+}
+.flame__outer {
+  width: 34px;
+  height: 34px;
+  margin-left: -17px;
+  background: radial-gradient(circle at 35% 70%, #ff9b2d 0%, #ff6a0a 55%, rgba(224, 64, 8, 0.35) 85%, transparent 100%);
+  filter: blur(3.5px);
+  animation: flamedance 0.55s ease-in-out infinite alternate, flamebend 2.3s ease-in-out infinite;
+}
+.flame__mid {
+  width: 22px;
+  height: 22px;
+  margin-left: -11px;
+  bottom: 8px;
+  background: radial-gradient(circle at 40% 68%, #ffe9a8 0%, #ffc14d 60%, transparent 100%);
+  filter: blur(1.6px);
+  animation: flamedance 0.42s ease-in-out infinite alternate-reverse, flamebend 1.7s ease-in-out infinite reverse;
+}
+.flame__core {
+  width: 11px;
+  height: 11px;
+  margin-left: -5.5px;
+  bottom: 10px;
+  background: radial-gradient(circle at 45% 65%, #ffffff 0%, #fff3cf 70%, transparent 100%);
+  filter: blur(0.8px);
+  animation: flamedance 0.34s ease-in-out infinite alternate;
+}
+.flame__base {
+  position: absolute;
+  left: 50%;
+  bottom: 2px;
+  width: 14px;
+  height: 9px;
+  margin-left: -7px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(96, 140, 255, 0.55), transparent 70%);
+  filter: blur(1.5px);
+}
+.flame__glow {
+  position: absolute;
+  left: 50%;
+  bottom: -40px;
+  width: 300px;
+  height: 300px;
+  margin-left: -150px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 148, 40, 0.45) 0%, rgba(255, 120, 26, 0.18) 40%, transparent 68%);
+  animation: glowbreathe 2.2s ease-in-out infinite;
+}
+/* teardrop shape: square rotated -45°, one sharp corner pointing up */
+@keyframes flamedance {
+  0% { transform: rotate(-45deg) scale(1, 1); }
+  35% { transform: rotate(-43deg) scale(0.96, 1.08); }
+  70% { transform: rotate(-47deg) scale(1.04, 0.95); }
+  100% { transform: rotate(-45deg) scale(0.98, 1.05); }
+}
+@keyframes flamebend {
+  0%, 100% { translate: 0 0; }
+  30% { translate: 1.5px -2px; }
+  65% { translate: -2px -1px; }
+}
+
+/* ============================================================
+   NAV
+   ============================================================ */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 8000;
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(1.25rem, 5vw, 5rem);
+  mix-blend-mode: difference;
+}
+.nav__brand {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  text-decoration: none;
+}
+.nav__list {
+  display: flex;
+  gap: 1.4rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.nav__link {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+  opacity: 0.7;
+  transition: opacity 0.3s;
+}
+.nav__link:hover,
+.nav__link.is-active {
+  opacity: 1;
+}
+.nav__pct {
+  font-size: 0.6rem;
+  color: var(--ember-soft);
+  font-variant-numeric: tabular-nums;
+}
+.nav__toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: 0;
+  padding: 8px;
+}
+.nav__toggle span {
+  width: 24px;
+  height: 2px;
+  background: var(--ink);
+}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 120%, var(--bg-2), var(--bg-0) 65%);
+}
+.hero__layer {
+  position: absolute;
+  inset: -10% 0 0 0;
+  pointer-events: none;
+}
+.hero__layer--bg {
+  background: radial-gradient(circle at 20% 30%, rgba(255, 120, 30, 0.06), transparent 40%),
+    radial-gradient(circle at 80% 60%, rgba(255, 150, 40, 0.05), transparent 45%);
+}
+.hero__layer--mid {
+  background: radial-gradient(circle at 50% 90%, rgba(255, 140, 40, 0.08), transparent 55%);
+}
+.hero__content {
+  position: relative;
+  z-index: 2;
+  max-width: 640px;
+}
+.hero__eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--ember-soft);
+}
+.hero__title {
+  font-size: clamp(3rem, 11vw, 8rem);
+  margin: 0.2em 0;
+  text-shadow: 0 0 60px rgba(255, 130, 30, 0.25);
+}
+.hero__lede {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: var(--ink-dim);
+  max-width: 42ch;
+}
+.hero__hint {
+  margin-top: 2rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  color: var(--ember-soft);
+  animation: bob 2.4s ease-in-out infinite;
+  transition: opacity 0.5s;
+}
+.hero__hint.is-hidden {
+  opacity: 0;
+}
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+/* ============================================================
+   PROCESS
+   ============================================================ */
+.process {
+  padding: 0;
+}
+.process__pin {
+  min-height: 100vh;
+  padding: clamp(3rem, 8vw, 7rem) clamp(1.25rem, 5vw, 5rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.process__head {
+  margin-bottom: 3rem;
+}
+.process__head h2 {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  max-width: 16ch;
+}
+.process__steps {
+  position: relative;
+  min-height: 46vh;
+}
+.process__step {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(1.5rem, 5vw, 4rem);
+  align-items: center;
+}
+.process__art {
+  aspect-ratio: 1;
+  max-width: 340px;
+  width: 100%;
+  justify-self: center;
+}
+.art-svg {
+  width: 100%;
+  height: auto;
+}
+.process__img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.process__art {
+  will-change: transform, opacity;
+}
+.process__num {
+  font-family: var(--serif);
+  font-size: 3rem;
+  color: var(--ember);
+  display: block;
+}
+.process__copy h3 {
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  margin: 0.3em 0;
+}
+.process__copy p {
+  color: var(--ink-dim);
+  max-width: 40ch;
+}
+
+/* ============================================================
+   INSIDE THE CANDLE
+   ============================================================ */
+.inside {
+  padding: 0;
+  background: linear-gradient(var(--bg-0), var(--bg-1));
+}
+.inside__pin {
+  min-height: 100vh;
+}
+.inside__stage {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: clamp(1.5rem, 5vw, 4rem);
+  padding: clamp(3rem, 8vw, 7rem) clamp(1.25rem, 5vw, 5rem);
+}
+.inside__diagram {
+  justify-self: center;
+  max-width: 420px;
+  width: 100%;
+}
+.inside__svg {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.5));
+}
+.inside__layer {
+  will-change: clip-path;
+}
+.inside__img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 16px;
+  filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.5));
+  will-change: clip-path, transform;
+}
+.inside__labels h2 {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  max-width: 14ch;
+}
+.inside__legend {
+  list-style: none;
+  padding: 0;
+  margin: 2rem 0 0;
+  display: grid;
+  gap: 0.9rem;
+}
+.inside__legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: var(--ink-dim);
+  transition: color 0.4s;
+}
+.dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex: none;
+}
+.dot--wax { background: var(--wax); }
+.dot--core { background: #c98b4a; }
+.dot--wick { background: #6b5540; }
+
+/* ============================================================
+   COLLECTION
+   ============================================================ */
+.collection__head {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+.collection__head h2 {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+}
+.collection__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+.product {
+  position: relative;
+  min-height: 340px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  background: linear-gradient(var(--bg-1), var(--bg-0));
+  overflow: hidden;
+  transition: border-color 0.5s, background 0.6s;
+}
+.product__candle {
+  position: relative !important;
+  margin-bottom: 1rem;
+}
+.product.is-revealed {
+  border-color: rgba(255, 140, 40, 0.4);
+  background: linear-gradient(var(--bg-2), var(--bg-1));
+}
+.product__meta {
+  text-align: center;
+  opacity: 0.35;
+  transform: translateY(8px);
+  transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+}
+.product.is-revealed .product__meta {
+  opacity: 1;
+  transform: none;
+}
+.product__meta h3 {
+  font-size: 1.3rem;
+}
+.product__notes {
+  font-size: 0.82rem;
+  color: var(--ink-dim);
+  margin: 0.4rem 0 0.8rem;
+}
+.product__shop {
+  color: var(--ember-soft);
+  text-decoration: none;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+}
+
+/* ============================================================
+   WHY IT MATTERS
+   ============================================================ */
+.why__head {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+.why__head h2 {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+}
+.why__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.25rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.benefit {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 1.75rem;
+  background: var(--bg-1);
+}
+.benefit__icon {
+  font-size: 1.8rem;
+}
+.benefit h3 {
+  font-size: 1.25rem;
+  margin: 0.6rem 0 0.4rem;
+}
+.benefit p {
+  color: var(--ink-dim);
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+/* ============================================================
+   STORY
+   ============================================================ */
+.story {
+  background: linear-gradient(var(--bg-1), var(--bg-0));
+}
+.story__wrap {
+  max-width: 720px;
+  margin: 0 auto;
+}
+.story__title {
+  font-size: clamp(1.8rem, 4.5vw, 3.4rem);
+  margin-bottom: 1.5rem;
+}
+.story__body p {
+  font-size: 1.1rem;
+  color: var(--ink-dim);
+}
+.story__sign {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--gold);
+}
+
+/* ============================================================
+   CLOSING
+   ============================================================ */
+.closing {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 120%, var(--bg-2), var(--bg-0) 65%);
+}
+.closing__scene {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.5;
+}
+.closing__candles {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.closing__content {
+  position: relative;
+  z-index: 2;
+}
+.closing__gust {
+  background: none;
+  border: 1px solid var(--line);
+  color: var(--ember-soft);
+  border-radius: 999px;
+  padding: 0.7rem 1.6rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 2rem;
+  transition: border-color 0.3s, color 0.3s;
+}
+.closing__gust:hover {
+  border-color: var(--ember);
+  color: var(--gold);
+}
+.closing__title {
+  font-size: clamp(2rem, 6vw, 4rem);
+}
+.closing__lede {
+  color: var(--ink-dim);
+}
+.btn {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.9rem 2rem;
+  border-radius: 999px;
+  background: linear-gradient(var(--ember-soft), var(--ember));
+  color: #2a1607;
+  text-decoration: none;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  box-shadow: var(--glow);
+}
+/* floating back-to-top — bottom-right corner, appears after scrolling */
+.to-top {
+  position: fixed;
+  right: 1.1rem;
+  bottom: 1.2rem;
+  z-index: 8500;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  display: grid;
+  place-items: center;
+  color: var(--ember-soft);
+  text-decoration: none;
+  font-size: 1.1rem;
+  background: rgba(31, 23, 16, 0.72);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: opacity 0.35s var(--ease), transform 0.35s var(--ease), border-color 0.3s;
+}
+.to-top.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+}
+.to-top:hover {
+  border-color: var(--ember);
+  color: var(--gold);
+}
+
+/* Wind gust visual: curved streaks blow from button to candle */
+.wind-gust {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 7999;
+}
+.wind-streak {
+  animation: windBlow 0.8s ease-out forwards;
+}
+@keyframes windBlow {
+  0% { stroke-dasharray: 0 100; stroke-dashoffset: 0; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 0.8; }
+  100% { stroke-dasharray: 100 0; stroke-dashoffset: 0; opacity: 0; }
+}
+
+/* Flame violent flicker as gust hits */
+.is-gusting .flame__outer {
+  animation: flameGusted 0.7s ease-in-out !important;
+}
+.is-gusting .flame__mid {
+  animation: flameGusted 0.5s ease-in-out !important;
+}
+.is-gusting .flame__core {
+  animation: flameGusted 0.6s ease-in-out !important;
+}
+@keyframes flameGusted {
+  0% { transform: rotate(-45deg) scale(1, 1) translateY(0); opacity: 1; }
+  20% { transform: rotate(-55deg) scale(0.7, 1.3) translateY(-4px); opacity: 0.9; }
+  40% { transform: rotate(-35deg) scale(1.2, 0.8) translateY(2px); opacity: 0.7; }
+  60% { transform: rotate(-48deg) scale(0.6, 1.4) translateY(-2px); opacity: 0.4; }
+  85% { transform: rotate(-42deg) scale(0.3, 0.5) translateY(-6px); opacity: 0.1; }
+  100% { transform: rotate(-45deg) scale(0, 0) translateY(-10px); opacity: 0; }
+}
+
+/* ============================================================
+   SCROLL PROGRESS BAR
+   ============================================================ */
+.scroll-progress {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 3px;
+  z-index: 8000;
+  background: var(--line);
+}
+.scroll-progress span {
+  display: block;
+  height: 100%;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left;
+  background: linear-gradient(90deg, var(--ember), var(--gold));
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 820px) {
+  .nav__list {
+    position: fixed;
+    inset: var(--nav-h) 0 auto 0;
+    flex-direction: column;
+    gap: 0;
+    background: var(--bg-1);
+    padding: 1rem 1.5rem;
+    transform: translateY(-120%);
+    transition: transform 0.4s var(--ease);
+    mix-blend-mode: normal;
+  }
+  .nav.is-open .nav__list {
+    transform: translateY(0);
+  }
+  .nav__link {
+    padding: 0.8rem 0;
+  }
+  .nav__toggle {
+    display: flex;
+  }
+  .process__step,
+  .inside__stage {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .process__art {
+    max-width: 220px;
+  }
+  .inside__labels {
+    order: -1;
+  }
+}
+
+/* ============================================================
+   REDUCED MOTION — keep everything readable, drop the theatrics
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .fire-cursor {
+    display: none;
+  }
+  .has-fire-cursor,
+  .has-fire-cursor a,
+  .has-fire-cursor button {
+    cursor: auto;
+  }
+  .process {
+    padding: 0;
+  }
+  .process__step {
+    position: relative;
+    inset: auto;
+    opacity: 1 !important;
+    margin-bottom: 3rem;
+  }
+  .process__steps {
+    min-height: auto;
+  }
+  /* candles show lit so content isn't gated behind an interaction */
+  .candle {
+    filter: none;
+  }
+  .candle__flame {
+    opacity: 1 !important;
+  }
+  /* candles render lit here, so the "extinguished" smoke trail would contradict */
+  .smoke-trail {
+    display: none;
+  }
+  .flame {
+    opacity: 1;
+  }
+}

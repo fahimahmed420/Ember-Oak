@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#1a120b" />
+    <meta
+      name="description"
+      content="Ember & Oak — hand-poured candles. A scroll-driven story you light as you go."
+    />
+    <title>Ember &amp; Oak — Hand-Poured Candles</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+  </head>
+  <body>
+    <!-- ============ LOADING SCREEN ============ -->
+    <div class="loader" id="loader" aria-hidden="true">
+      <div class="loader__inner">
+        <div class="loader__candle" data-loader-candle></div>
+        <div class="loader__count"><span id="loaderPct">0</span><span class="loader__pctmark">%</span></div>
+        <p class="loader__label">warming the wax</p>
+      </div>
+    </div>
+
+    <!-- ============ FIRE CURSOR ============ -->
+    <div class="fire-cursor" id="fireCursor" aria-hidden="true">
+      <div class="fire-cursor__glow"></div>
+      <div class="fire-cursor__flame" data-flame></div>
+    </div>
+
+    <!-- ============ NAV ============ -->
+    <nav class="nav" id="nav" aria-label="Section navigation">
+      <a class="nav__brand" href="#top" data-nav="0">Ember&nbsp;&amp;&nbsp;Oak</a>
+      <ul class="nav__list" id="navList"><!-- built by nav.js --></ul>
+      <button class="nav__toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+    </nav>
+
+    <main id="top">
+      <!-- ============ 1 · HERO ============ -->
+      <section class="section hero" id="hero" data-section="Hero" data-index="0">
+        <div class="hero__layer hero__layer--bg" data-parallax="0.2"></div>
+        <div class="hero__layer hero__layer--mid" data-parallax="0.5"></div>
+        <div class="hero__content">
+          <p class="hero__eyebrow">hand-poured · small batch · slow light</p>
+          <h1 class="hero__title">Light it<br />as you go.</h1>
+          <p class="hero__lede">
+            Move your cursor across the dark. Every candle you brush against
+            catches flame — and stays lit for the rest of the journey.
+          </p>
+          <p class="hero__hint" data-hero-hint>↓ scroll — and light every wick you find</p>
+        </div>
+      </section>
+
+      <!-- ============ 2 · OUR PROCESS ============ -->
+      <section class="section process" id="process" data-section="Process" data-index="1">
+        <div class="process__pin" data-process-pin>
+          <header class="process__head">
+            <p class="eyebrow">Our Process</p>
+            <h2>Three slow steps to a single candle.</h2>
+          </header>
+          <div class="process__steps">
+            <article class="process__step" data-step="0">
+              <div class="process__art" data-process-art="pour"></div>
+              <div class="process__copy">
+                <span class="process__num">01</span>
+                <h3>Hand-pouring</h3>
+                <p>Small pours of soy &amp; coconut wax, settled by hand at low heat so the surface stays glass-smooth.</p>
+              </div>
+            </article>
+            <article class="process__step" data-step="1">
+              <div class="process__art" data-process-art="wick"></div>
+              <div class="process__copy">
+                <span class="process__num">02</span>
+                <h3>Wick-setting</h3>
+                <p>A single cotton wick is centred and held while the wax cools — the difference between a clean burn and a tunnel.</p>
+              </div>
+            </article>
+            <article class="process__step" data-step="2">
+              <div class="process__art" data-process-art="scent"></div>
+              <div class="process__copy">
+                <span class="process__num">03</span>
+                <h3>Fragrance blending</h3>
+                <p>Phthalate-free oils folded in at the cure point, then rested for two weeks so the scent throws true.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 3 · INSIDE THE CANDLE ============ -->
+      <section class="section inside" id="inside" data-section="Inside" data-index="2">
+        <div class="inside__pin" data-inside-pin>
+          <div class="inside__stage">
+            <div class="inside__diagram" data-inside-diagram><!-- built by inside.js --></div>
+            <div class="inside__labels">
+              <p class="eyebrow">Inside the Candle</p>
+              <h2>Peel it back, layer by layer.</h2>
+              <ul class="inside__legend">
+                <li data-layer-label="0"><span class="dot dot--wax"></span> Outer wax shell</li>
+                <li data-layer-label="1"><span class="dot dot--core"></span> Fragrance core</li>
+                <li data-layer-label="2"><span class="dot dot--wick"></span> Cotton wick</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 4 · THE COLLECTION ============ -->
+      <section class="section collection" id="collection" data-section="Collection" data-index="3">
+        <header class="collection__head">
+          <p class="eyebrow">The Collection</p>
+          <h2>Five moods. Light the one you need.</h2>
+        </header>
+        <div class="collection__grid" data-candle-field="collection"><!-- built by collection.js --></div>
+      </section>
+
+      <!-- ============ 5 · WHY IT MATTERS ============ -->
+      <section class="section why" id="why" data-section="Why" data-index="4">
+        <header class="why__head">
+          <p class="eyebrow">Why It Matters</p>
+          <h2>Small choices, cleaner light.</h2>
+        </header>
+        <div class="why__grid" id="whyGrid"><!-- built by why.js --></div>
+      </section>
+
+      <!-- ============ 6 · OUR STORY ============ -->
+      <section class="section story" id="story" data-section="Story" data-index="5">
+        <div class="story__wrap">
+          <p class="eyebrow">Our Story</p>
+          <h2 class="story__title">It started with one bad winter and a cheap candle.</h2>
+          <div class="story__body">
+            <p>
+              We wanted a light that felt like something — not a chemical bloom, not
+              a jar that tunnelled after an hour. So we started pouring in a rented
+              kitchen, testing wicks until the burn went flat and even.
+            </p>
+            <p>
+              Ten years on, every candle is still poured in small batches by the
+              same small crew. We name each one after the hour it's meant for.
+            </p>
+            <p class="story__sign">— The Ember &amp; Oak crew</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 7 · CLOSING ============ -->
+      <section class="section closing" id="closing" data-section="Closing" data-index="6">
+        <div class="closing__scene" aria-hidden="true"></div>
+        <div class="closing__candles" data-candle-field="closing" aria-hidden="true"></div>
+        <div class="closing__content">
+          <button class="closing__gust" id="gustBtn" type="button">blow them all out ✦</button>
+          <h2 class="closing__title">Thanks for lighting the way.</h2>
+          <p class="closing__lede">The smoke leads here — one flame just went out. Touch it to relight.</p>
+          <a class="btn" href="#collection" data-nav="3">Shop the collection</a>
+        </div>
+      </section>
+    </main>
+
+    <a class="to-top" href="#top" data-nav="0" aria-label="Back to top">↑</a>
+    <div class="scroll-progress" id="scrollProgress" aria-hidden="true"><span></span></div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
