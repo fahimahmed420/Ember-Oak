@@ -1,15 +1,20 @@
-# Drop your illustration files here
+# Deployed artwork (WebP)
 
-Name them **exactly** as below (the code looks for these filenames). WebP is
-preferred for size; PNG also works — if you use PNG, rename the extension in
-`src/assets.js` (the `ASSETS` object) to `.png`.
+These are the compressed, display-sized WebP files the site actually loads —
+referenced from `src/assets.js`. Full-resolution originals live in
+`/art-source` (kept out of `/public` so they don't ship in the deploy bundle).
 
-| Filename                     | What it is                        | Suggested size        |
-|------------------------------|-----------------------------------|-----------------------|
-| `process-pour.webp`          | Hand-pouring wax into a jar       | 1024×1024, transparent |
-| `process-wick.webp`          | Setting/centering the cotton wick | 1024×1024, transparent |
-| `process-scent.webp`         | Blending fragrance oils           | 1024×1024, transparent |
-| `inside-cross-section.webp`  | Candle cut in half, layers shown  | 1024×1280, transparent |
+| File                          | Used in                    | Max display size |
+|-------------------------------|----------------------------|------------------|
+| `process-pour.webp`           | Process step 1             | ~340px           |
+| `process-wick.webp`           | Process step 2             | ~340px           |
+| `process-scent.webp`          | Process step 3             | ~340px           |
+| `inside-cross-section.webp`   | Inside the Candle          | ~420px           |
+| `hero-bg.webp`                | Hero background            | viewport         |
+| `hero-mid.webp`               | Hero glow layer            | viewport         |
+| `closing-scene.webp`          | Closing backdrop           | viewport         |
+| `candle/bottom-candle.webp`   | Closing candle             | ~520px           |
 
-If a file is missing, the site falls back to the built-in placeholder SVG — so
-you can add them one at a time. No code changes needed; just drop and refresh.
+To replace artwork: export a new WebP at roughly 2× its display size
+(e.g. `npx sharp-cli resize 680 -i new.png -o process-pour.webp -f webp -q 80`),
+drop it here under the same name, and keep the original in `/art-source`.

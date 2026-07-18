@@ -83,6 +83,9 @@ export function initNav({ lenis }) {
     const now = window.scrollY / total;
     if (progress) progress.style.transform = `scaleX(${now})`;
     toTop?.classList.toggle('is-visible', now > 0.1);
+    // Scroll warmth: the page's color temperature rises gently the deeper
+    // you scroll into the story, via a single CSS custom property.
+    document.documentElement.style.setProperty('--warmth', now.toFixed(3));
     let active = marks[0];
     for (const m of marks) if (now >= m.pct - 0.02) active = m;
     marks.forEach((m) => m.el.classList.toggle('is-active', m === active));

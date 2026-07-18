@@ -11,15 +11,16 @@
 // Drop matching files in /public/art/ and they load automatically; if a file is
 // missing, the placeholder SVG below is used instead. Paths are relative to the
 // site root (Vite serves /public at /).
+// Sized + WebP-compressed for deployment (originals live in /art-source);
+// oversized PNGs here caused visible decode jank as sections scrolled in.
 export const ASSETS = {
-  heroBg: 'art/hero-bg.png',
-  heroMid: 'art/hero-mid.png',
-  closingScene: 'art/closing-scene.png',
-  closingCandle: 'art/candle/bottom-candle.png',
-  processPour: 'art/process-pour.png',
-  processWick: 'art/process-wick.png',
-  processScent: 'art/process-scent.png',
-  insideCrossSection: 'art/inside-cross-section.png',
+  heroBg: 'art/hero-bg.webp',
+  closingScene: 'art/closing-scene.webp',
+  closingCandle: 'art/candle/bottom-candle.webp',
+  processPour: 'art/process-pour.webp',
+  processWick: 'art/process-wick.webp',
+  processScent: 'art/process-scent.webp',
+  insideCrossSection: 'art/inside-cross-section.webp',
 };
 
 /**
@@ -45,32 +46,96 @@ export function mountArt(host, path, placeholderSVG, { alt = '', className = '' 
 }
 
 /**
- * Placeholder candle. Returns an SVG string.
- * Structure the ignition logic depends on (keep these hooks on real art too):
- *   [data-flame-target]  — group that fades/pops in on ignite
- *   [data-wick]          — the wick element (recolours when lit)
- *   [data-glow]          — radial glow that blooms
+ * Vessel silhouettes for the Collection — one distinct shape + material per
+ * scent, so the five read as a real product line. Each returns just the
+ * container + wax (no wick/flame — those come from the shared realistic
+ * flame component in candles.js's createVesselCandle, same as the closing
+ * candle) plus the wick's relative position for that silhouette.
  */
-export function candleSVG({ w = 120, h = 220, hue = 32 } = {}) {
-  return `
-  <svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" xmlns="http://www.w3.org/2000/svg" class="candle__svg" preserveAspectRatio="xMidYMax meet">
-    <defs>
-      <radialGradient id="cg-${hue}" cx="50%" cy="35%" r="65%">
-        <stop offset="0%" stop-color="hsl(${hue} 55% 82%)"/>
-        <stop offset="100%" stop-color="hsl(${hue} 40% 62%)"/>
-      </radialGradient>
-    </defs>
-    <ellipse class="candle__glow" data-glow cx="${w / 2}" cy="42" rx="${w * 0.7}" ry="${w * 0.7}" fill="hsl(38 100% 60%)" opacity="0"/>
-    <rect x="${w * 0.2}" y="70" width="${w * 0.6}" height="${h - 90}" rx="10" fill="url(#cg-${hue})"/>
-    <ellipse cx="${w / 2}" cy="70" rx="${w * 0.3}" ry="9" fill="hsl(${hue} 45% 88%)"/>
-    <ellipse cx="${w / 2}" cy="70" rx="${w * 0.16}" ry="4" fill="hsl(${hue} 30% 55%)" opacity="0.55"/>
-    <rect class="candle__wick" data-wick x="${w / 2 - 1.5}" y="52" width="3" height="20" rx="1.5" fill="#6b6b6b"/>
-    <g class="candle__flame" data-flame-target opacity="0">
-      <ellipse cx="${w / 2}" cy="40" rx="9" ry="18" fill="hsl(28 100% 58%)"/>
-      <ellipse cx="${w / 2}" cy="44" rx="5" ry="11" fill="hsl(48 100% 72%)"/>
-      <ellipse cx="${w / 2}" cy="47" rx="2.5" ry="6" fill="#fff8e6"/>
-    </g>
-  </svg>`;
+export function vesselSVG(kind, { waxHue = 32 } = {}) {
+  const w = 160,
+    h = 260;
+  const wax = (top, shade = 0) => `hsl(${waxHue} ${45 - shade}% ${78 - shade}%)`;
+  const waxDark = (shade = 0) => `hsl(${waxHue} ${35 - shade}% ${58 - shade}%)`;
+
+  const defs = `
+    <linearGradient id="glass-${kind}" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.05"/>
+      <stop offset="0.15" stop-color="#fff" stop-opacity="0.35"/>
+      <stop offset="0.3" stop-color="#fff" stop-opacity="0.05"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0.08"/>
+    </linearGradient>
+    <linearGradient id="wax-${kind}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="${wax()}"/>
+      <stop offset="1" stop-color="${waxDark()}"/>
+    </linearGradient>`;
+
+  switch (kind) {
+    case 'tumbler': // Six A.M. — tall clear glass, pale wax, thin rim
+      return {
+        wickY: '17%',
+        svg: `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" class="vessel-svg">
+          <defs>${defs}</defs>
+          <rect x="46" y="52" width="68" height="176" rx="6" fill="none" stroke="#cbd4d6" stroke-width="2" opacity="0.7"/>
+          <rect x="46" y="52" width="68" height="176" rx="6" fill="url(#glass-${kind})"/>
+          <rect x="50" y="66" width="60" height="158" rx="4" fill="url(#wax-${kind})"/>
+          <ellipse cx="80" cy="66" rx="30" ry="7" fill="${wax(0, -6)}"/>
+        </svg>`,
+      };
+    case 'apothecary': // Amber Hour — rounded amber jar, wide mouth
+      return {
+        wickY: '20%',
+        svg: `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" class="vessel-svg">
+          <defs>${defs}</defs>
+          <path d="M42 78 Q40 60 62 56 L98 56 Q120 60 118 78 L124 216 Q124 232 106 232 L54 232 Q36 232 36 216 Z"
+                fill="#8a5a1e" opacity="0.32"/>
+          <path d="M42 78 Q40 60 62 56 L98 56 Q120 60 118 78 L124 216 Q124 232 106 232 L54 232 Q36 232 36 216 Z"
+                fill="url(#glass-${kind})" stroke="#a3742e" stroke-width="1.5" opacity="0.8"/>
+          <path d="M50 82 L110 82 L114 210 Q114 222 102 222 L58 222 Q46 222 46 210 Z" fill="url(#wax-${kind})"/>
+          <ellipse cx="80" cy="82" rx="30" ry="7" fill="${wax(0, -6)}"/>
+        </svg>`,
+      };
+    case 'bowl': // Rain Delay — low wide bowl on a footed ring
+      return {
+        wickY: '34%',
+        svg: `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" class="vessel-svg">
+          <defs>${defs}</defs>
+          <path d="M28 108 Q28 152 80 152 Q132 152 132 108 L124 96 Q80 116 36 96 Z"
+                fill="url(#glass-${kind})" stroke="#9fb0ab" stroke-width="1.5" opacity="0.75"/>
+          <path d="M36 96 Q80 116 124 96 L120 100 Q80 118 40 100 Z" fill="url(#wax-${kind})"/>
+          <ellipse cx="80" cy="98" rx="44" ry="9" fill="${wax(0, -4)}"/>
+          <rect x="60" y="150" width="40" height="8" rx="4" fill="#7f9089" opacity="0.6"/>
+        </svg>`,
+      };
+    case 'tin': // Last Call — matte metal tin, dark bourbon wax
+      return {
+        wickY: '20%',
+        svg: `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" class="vessel-svg">
+          <defs>${defs}
+            <linearGradient id="metal-${kind}" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#4a4038"/>
+              <stop offset="0.5" stop-color="#726357"/>
+              <stop offset="1" stop-color="#332b25"/>
+            </linearGradient>
+          </defs>
+          <rect x="40" y="70" width="80" height="150" rx="8" fill="url(#metal-${kind})"/>
+          <ellipse cx="80" cy="70" rx="40" ry="10" fill="#5c5049"/>
+          <ellipse cx="80" cy="70" rx="34" ry="8" fill="url(#wax-${kind})"/>
+        </svg>`,
+      };
+    case 'cylinder': // Midnight Oil — tall slender glass, near-black wax
+    default:
+      return {
+        wickY: '13%',
+        svg: `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" class="vessel-svg">
+          <defs>${defs}</defs>
+          <rect x="54" y="40" width="52" height="196" rx="4" fill="none" stroke="#8a8177" stroke-width="1.5" opacity="0.6"/>
+          <rect x="54" y="40" width="52" height="196" rx="4" fill="url(#glass-${kind})"/>
+          <rect x="58" y="52" width="44" height="180" rx="3" fill="url(#wax-${kind})"/>
+          <ellipse cx="80" cy="52" rx="22" ry="5" fill="${wax(0, -8)}"/>
+        </svg>`,
+      };
+  }
 }
 
 /** Small flame used for the cursor. */

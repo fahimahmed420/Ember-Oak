@@ -1,12 +1,11 @@
 # Ember & Oak — Scrollytelling Candle Site
 
-A premium single-page scroll-driven experience for a luxury candle brand. The whole narrative is animated to scroll position: the cursor becomes a small flame that lights candles as you brush past them; a page-long smoke trail winds from a just-extinguished candle to the "Inside the Candle" section; and a physics-simulated fuse rope in the bottom-right lets you burn your way back to the top.
+A premium single-page scroll-driven experience for a luxury candle brand. The whole narrative is animated to scroll position: the cursor becomes a small flame that lights candles as you brush past them, and a page-long smoke trail winds from a just-extinguished candle up to the "Inside the Candle" section.
 
 ## Stack
 - **Vite** + vanilla JS (no framework, lightweight)
 - **GSAP + ScrollTrigger** — pinning, scrubbing, staggered reveals
 - **Lenis** — smooth scroll for scrollytelling pacing
-- **Verlet physics** — rope simulation with gravity, damping, constraints
 - Plain CSS with custom properties (warm candlelit palette)
 - Static output — deploy `dist/` to Netlify, Vercel, or GitHub Pages
 
@@ -31,6 +30,7 @@ npm run preview  # preview the production build
 ### Candle Ignition (src/candles.js)
 - SVG placeholder candles with animated flame, wick recolor, glow bloom
 - Image-based candles (real artwork) with realistic layered CSS flame
+- **Vessel candles** (Collection): five distinct silhouettes — tumbler, apothecary jar, footed bowl, metal tin, tall cylinder — each with its own glass/wax tint, all sharing the same realistic layered flame
 - Sticky-lit state: once lit, candles stay lit (no reset)
 - Tap-to-light support for touch devices
 - Gust blowout: single button snuffs every lit candle at once
@@ -43,15 +43,9 @@ npm run preview  # preview the production build
 - **Smooth grow on gust**: fresh smoke materializes from wick upward over 10 seconds
 - Each animation uses animated gradient stops in an SVG mask (constant soft feather)
 
-### Fuse Rope (src/rope.js)
-- **Physics-simulated verlet chain**: 26 segments with gravity, damping, 4-iteration constraint solving
-- Hangs from top-right corner; sways with ambient air drift
-- **Cursor interaction**: moving flame pushes rope away (radial force + velocity sharing)
-- **Realistic burn**: ember climbs slowly, rope physically shortens (loses mass), sparks spit and arc under gravity
-- **Charred zone** trails behind the ember; both glow flicker per-frame
-- On ignition: page smooth-scrolls to top via Lenis, fresh rope fades in and settles
-- Touch support: tap the rope's loose end to light it
-- Disabled under `prefers-reduced-motion` (plain ↑ button remains)
+### Back to Top
+- A floating ↑ button in the bottom-right corner, appearing after ~10% scroll
+- Smooth-scrolls to the top via Lenis
 
 ### Wind Gust Animation (src/main.js)
 - Six sinuous wind lines sweep across viewport when "blow out" is clicked
@@ -88,6 +82,19 @@ npm run preview  # preview the production build
 - **Breathing halo** that pulses outward
 - Extinguish animation: compress + rise + fade with controlled opacity curve
 - Wind interaction: flame skews, squashes, and shrinks while staying lit until wind "reaches" it
+- Shared across the closing candle and all five Collection vessel candles
+
+### Cinematic Atmosphere (src/heroLight.js, src/dust.js)
+- **Dark hero + cursor light reveal**: the hero's background art sits under a near-opaque veil with a transparent hole centered on the flame cursor — moving the flame through the scene reveals it, like carrying a candle through a dark room. Headline/copy always stay fully legible above the veil. Falls back to a fixed off-center glow on touch/reduced-motion.
+- **Drifting dust/ember motes**: ~16 per section in the hero and closing, pure-CSS keyframe drift (no per-frame JS cost), skipped under reduced-motion
+- **Film grain + vignette**: a subtle SVG-noise overlay (`mix-blend-mode: overlay`) and edge-darkening box-shadow on the hero and closing sections
+- **Scroll warmth shift**: the whole page's color temperature rises gently the deeper you scroll, via a single `--warmth` CSS variable updated from scroll position in `nav.js`
+- **Title glow**: the hero headline is a gradient-clipped sheen that slowly shifts + breathes with a soft drop-shadow
+
+### Collection Card Polish (src/styles/main.css)
+- Hover lift + soft shadow, a warm rim-light sweep across the top edge
+- Candle scales up slightly on card hover
+- Underline-reveal on the "Shop →" link
 
 ## Architecture
 
@@ -97,48 +104,42 @@ src/
   main.js               entry — orchestrates all modules
   loader.js             preload counter → ignite transition
   fireCursor.js         flame position tracking + wick detection
-  candles.js            SVG + image candle registry, ignition, gust
-  rope.js               verlet physics rope + burn simulation
+  candles.js            image + vessel candle registry, ignition, gust
   smoke.js              turbulent smoke trail + directional wipe mask
+  heroLight.js           cursor-driven light reveal for the dark hero
+  dust.js                drifting dust/ember motes (hero + closing)
   scroll.js             GSAP ScrollTrigger pinning + Lenis + reduced-motion
-  nav.js                percentage nav + progress bar
+  nav.js                percentage nav + progress bar + scroll-warmth variable
   sections.js           DOM builders (candles, collection, benefits, inside diagram)
-  assets.js             asset manifest (swap point for real artwork)
+  assets.js             asset manifest (swap point for real artwork) + vessel SVG factory
   styles/main.css       palette, layout, animations, responsive, a11y
 ```
 
 ## Swapping Real Artwork
 
-All illustrated elements are referenced through `src/assets.js`. Drop real files into `public/art/` and they auto-load:
-
-| File | Purpose |
-|------|---------|
-| `process-pour.png` | Process step 1 |
-| `process-wick.png` | Process step 2 |
-| `process-scent.png` | Process step 3 |
-| `inside-cross-section.png` | Cross-section (portrait) |
-| `hero-bg.png` | Hero background |
-| `hero-mid.png` | Hero glow layer |
-| `closing-scene.png` | Closing section backdrop |
-| `candle/bottom-candle.png` | Real closing candle (used with image flame) |
+All illustrated elements are referenced through `src/assets.js`. The site ships
+display-sized WebP files from `public/art/` (~730 KB total); full-resolution
+originals are kept in `/art-source`, outside the deploy bundle. See
+`public/art/DROP_IMAGES_HERE.md` for the per-file sizes and the one-line
+`sharp-cli` command to regenerate a WebP from a new original.
 
 Animation logic never touches artwork directly, so swaps work without code changes.
 
 ## Accessibility
 - Full `prefers-reduced-motion` support: no scroll-jacking, no pinning, all content readable
 - Fire cursor disabled on touch devices (uses native cursor instead)
-- Rope not installed on reduced-motion (accessible ↑ button remains)
+- Dust motes and cursor light-reveal loop skipped entirely under reduced-motion
 - All animations have fallbacks; content is never gated behind an interaction
 - Semantic markup with proper heading hierarchy
 - Page is fully navigable via keyboard
 
 ## Performance
-- Vite + esbuild for fast dev/build
-- Lazy-loading for below-fold images
-- SVG for graphics (scalable, small)
-- CSS animations (GPU-accelerated)
-- Verlet rope uses efficient constraint relaxation (no complex math per frame)
-- rAF frame loop runs only while tab is visible
+- Artwork ships as display-sized WebP (~730 KB total vs 17 MB originals) — no decode jank as sections scroll in
+- Smoke-trail SVG filters (turbulence/displacement/blur) are fully static; sway is a single composited transform on the container, so the expensive filters rasterize once instead of every frame
+- The scroll-warmth overlay avoids `mix-blend-mode` (full-viewport blending breaks compositor fast paths during scroll)
+- Dust motes are built once then animated purely by CSS keyframes (no per-frame JS)
+- Hero light-reveal loop is IntersectionObserver-gated — zero work while the hero is off-screen
+- rAF frame loops run only while the tab is visible
 
 ## Browser Support
 - Modern browsers with ES2019+ support

@@ -11,7 +11,7 @@
 import { cursorFlameSVG } from './assets.js';
 import { testHotZones } from './candles.js';
 
-/** Live eased flame position, readable by other modules (e.g. the rope fuse). */
+/** Live eased flame position, readable by other modules (e.g. the hero light reveal). */
 export const firePos = { x: 0, y: 0, active: false };
 
 export function initFireCursor({ reducedMotion }) {

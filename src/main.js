@@ -4,7 +4,8 @@ import { initFireCursor } from './fireCursor.js';
 import { initScroll } from './scroll.js';
 import { initNav } from './nav.js';
 import { initSmoke } from './smoke.js';
-import { initRope } from './rope.js';
+import { initHeroLight } from './heroLight.js';
+import { initDustMotes } from './dust.js';
 import { gustBlowOut } from './candles.js';
 import {
   buildClosingCandle,
@@ -27,6 +28,9 @@ applySceneBackgrounds();
 
 // 2. Fire cursor + candle hot-zones (tap-to-light on touch, handled inside).
 initFireCursor({ reducedMotion });
+// Dark hero the cursor's flame reveals, + drifting dust/ember motes.
+initHeroLight({ reducedMotion });
+initDustMotes({ reducedMotion });
 
 // 3. Loader, then reveal + scroll wiring.
 runLoader().then(() => {
@@ -35,8 +39,6 @@ runLoader().then(() => {
   const nav = initNav({ lenis });
   // Page-long smoke trail ending at the closing candle (built after pins lay out).
   initSmoke();
-  // Fuse rope in the bottom-right — light it to ride back to the top.
-  initRope({ lenis, reducedMotion });
   // Re-measure nav percentages once pins have laid out.
   setTimeout(() => nav?.measure?.(), 400);
 

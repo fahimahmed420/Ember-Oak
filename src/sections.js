@@ -4,7 +4,7 @@
  * cross-section diagram. All illustrated pieces come from assets.js so real
  * artwork swaps in without touching this file's structure.
  */
-import { createCandle, createImageCandle } from './candles.js';
+import { createImageCandle, createVesselCandle } from './candles.js';
 import { processArtSVG, mountArt, ASSETS } from './assets.js';
 
 /**
@@ -30,7 +30,6 @@ export function applySceneBackgrounds() {
     img.src = path;
   };
   set('.hero__layer--bg', ASSETS.heroBg);
-  set('.hero__layer--mid', ASSETS.heroMid, { mixBlendMode: 'screen', opacity: '0.85' });
   set('.closing__scene', ASSETS.closingScene);
 }
 
@@ -52,26 +51,28 @@ export function buildClosingCandle() {
 }
 
 const PRODUCTS = [
-  { name: 'Six A.M.', hue: 40, notes: 'Bergamot · Oat milk · Cedar', link: '#' },
-  { name: 'Amber Hour', hue: 30, notes: 'Amber · Tonka · Dry hay', link: '#' },
-  { name: 'Rain Delay', hue: 20, notes: 'Petrichor · Vetiver · Moss', link: '#' },
-  { name: 'Last Call', hue: 14, notes: 'Bourbon · Smoked vanilla · Oak', link: '#' },
-  { name: 'Midnight Oil', hue: 46, notes: 'Black tea · Fig · Leather', link: '#' },
+  { name: 'Six A.M.', vessel: 'tumbler', hue: 40, notes: 'Bergamot · Oat milk · Cedar', link: '#' },
+  { name: 'Amber Hour', vessel: 'apothecary', hue: 30, notes: 'Amber · Tonka · Dry hay', link: '#' },
+  { name: 'Rain Delay', vessel: 'bowl', hue: 150, notes: 'Petrichor · Vetiver · Moss', link: '#' },
+  { name: 'Last Call', vessel: 'tin', hue: 22, notes: 'Bourbon · Smoked vanilla · Oak', link: '#' },
+  { name: 'Midnight Oil', vessel: 'cylinder', hue: 250, notes: 'Black tea · Fig · Leather', link: '#' },
 ];
 
-/** Product collection — each card ignites via the shared fire-cursor mechanic. */
+/** Product collection — distinct vessel per scent, each ignites via the shared fire-cursor mechanic. */
 export function buildCollection() {
   const grid = document.querySelector('[data-candle-field="collection"]');
   if (!grid) return;
   PRODUCTS.forEach((p) => {
     const card = document.createElement('article');
     card.className = 'product';
-    const { el } = createCandle({
-      hue: p.hue,
-      scale: 1,
+    const { el } = createVesselCandle({
+      vessel: p.vessel,
+      waxHue: p.hue,
       className: 'product__candle',
+      alt: `${p.name} candle`,
       onIgnite: () => card.classList.add('is-revealed'),
     });
+    el.classList.add('product__candle');
     card.appendChild(el);
     const meta = document.createElement('div');
     meta.className = 'product__meta';

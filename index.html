@@ -41,7 +41,9 @@
       <!-- ============ 1 · HERO ============ -->
       <section class="section hero" id="hero" data-section="Hero" data-index="0">
         <div class="hero__layer hero__layer--bg" data-parallax="0.2"></div>
-        <div class="hero__layer hero__layer--mid" data-parallax="0.5"></div>
+        <div class="hero__veil" aria-hidden="true"></div>
+        <div class="dust-field" data-dust aria-hidden="true"></div>
+        <div class="grain-overlay" aria-hidden="true"></div>
         <div class="hero__content">
           <p class="hero__eyebrow">hand-poured · small batch · slow light</p>
           <h1 class="hero__title">Light it<br />as you go.</h1>
@@ -148,12 +150,20 @@
       <!-- ============ 7 · CLOSING ============ -->
       <section class="section closing" id="closing" data-section="Closing" data-index="6">
         <div class="closing__scene" aria-hidden="true"></div>
+        <div class="dust-field" data-dust aria-hidden="true"></div>
+        <div class="grain-overlay" aria-hidden="true"></div>
         <div class="closing__candles" data-candle-field="closing" aria-hidden="true"></div>
         <div class="closing__content">
-          <button class="closing__gust" id="gustBtn" type="button">blow them all out ✦</button>
+          <button class="closing__gust" id="gustBtn" type="button" aria-label="Blow out every lit candle">
+            <span class="closing__gust-ring"></span>
+            <svg class="closing__gust-icon" viewBox="0 0 48 48" aria-hidden="true">
+              <path d="M6 26c8-11 19-11 27-3c4 4 4 9 0 12c-3 2-6 0.5-6-2.5" />
+              <circle class="closing__gust-dot" cx="30" cy="17" r="1.6" />
+            </svg>
+            <span class="closing__gust-label">Blow it out</span>
+          </button>
           <h2 class="closing__title">Thanks for lighting the way.</h2>
           <p class="closing__lede">The smoke leads here — one flame just went out. Touch it to relight.</p>
-          <a class="btn" href="#collection" data-nav="3">Shop the collection</a>
         </div>
       </section>
     </main>

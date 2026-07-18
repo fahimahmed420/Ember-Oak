@@ -45,15 +45,15 @@ export function initSmoke() {
 function build() {
   if (!root) return;
   const wick = document.querySelector('.closing__candles [data-wick]');
-  const inside = document.querySelector('#inside');
-  if (!wick || !inside) return;
+  const story = document.querySelector('#story');
+  if (!wick || !story) return;
 
   const wr = wick.getBoundingClientRect();
   const endX = wr.left + wr.width / 2 + window.scrollX;
   const endY = wr.top + window.scrollY;
-  // Trail reaches up to the Inside section (not the page top).
-  const startY = inside.getBoundingClientRect().top + window.scrollY;
-  H = Math.max(endY - startY, 400);
+  // Trail reaches up to the Story section (shorter, cheaper to render).
+  const startY = story.getBoundingClientRect().top + window.scrollY;
+  H = Math.max(endY - startY, 300);
   const W = document.documentElement.clientWidth;
 
   /**
@@ -78,13 +78,12 @@ function build() {
     return smoothPath(pts, startY);
   };
 
-  // [phase, amp, fan, width, opacity]
+  // [phase, amp, fan, width, opacity] — kept to 3 strands + 1 haze for perf
+  // every extra path re-runs the displacement/blur filter chain.
   const sharp = [
     [0.7, 0.05, 0, 3.5, 0.55],
-    [1.9, 0.045, -1, 6, 0.4],
-    [3.4, 0.055, 1, 9, 0.3],
-    [5.1, 0.04, -2, 5, 0.28],
-    [2.6, 0.06, 2, 4, 0.34],
+    [1.9, 0.045, -1, 6, 0.42],
+    [3.4, 0.055, 1, 9, 0.32],
   ];
 
   const sharpPaths = sharp
@@ -95,13 +94,13 @@ function build() {
     )
     .join('');
 
-  // Haze reuses three of the strand geometries, drawn fat + very blurred,
+  // Haze uses just one strand geometry, drawn fat + very blurred,
   // and its own gradient confines it to the upper region (the dissolve zone).
-  const hazePaths = [sharp[0], sharp[2], sharp[3]]
+  const hazePaths = [sharp[0]]
     .map(
       ([p, a, f]) => `
-      <path d="${strand(p, a * 1.15, f * 1.6)}" fill="none" stroke="url(#hazeGrad)" stroke-width="44"
-            stroke-linecap="round" filter="url(#smokeSoft)" opacity="0.14"/>`
+      <path d="${strand(p, a * 1.15, f * 1.6)}" fill="none" stroke="url(#hazeGrad)" stroke-width="40"
+            stroke-linecap="round" filter="url(#smokeSoft)" opacity="0.15"/>`
     )
     .join('');
 
@@ -127,15 +126,18 @@ function build() {
           <stop offset="0.75" stop-color="#c4bbb0" stop-opacity="0.1"/>
           <stop offset="1" stop-color="#c4bbb0" stop-opacity="0"/>
         </linearGradient>
-        <filter id="smokeSoft" x="-80%" y="-5%" width="260%" height="110%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.007 0.024" numOctaves="2" seed="11" result="n"/>
-          <feDisplacementMap in="SourceGraphic" in2="n" scale="110" xChannelSelector="R" yChannelSelector="G"/>
-          <feGaussianBlur stdDeviation="13"/>
+        <!-- filter params are a perf budget: even with the shorter trail,
+             filters are still expensive, so we keep scales/octaves minimal
+             and NOTHING inside the filtered tree is ever animated -->
+        <filter id="smokeSoft" x="-40%" y="-5%" width="180%" height="110%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.007 0.024" numOctaves="1" seed="11" result="n"/>
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="45" xChannelSelector="R" yChannelSelector="G"/>
+          <feGaussianBlur stdDeviation="5.5"/>
         </filter>
-        <filter id="smokeWisp" x="-60%" y="-5%" width="220%" height="110%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.011 0.05" numOctaves="4" seed="4" result="n"/>
-          <feDisplacementMap in="SourceGraphic" in2="n" scale="42" xChannelSelector="R" yChannelSelector="G"/>
-          <feGaussianBlur stdDeviation="1.3"/>
+        <filter id="smokeWisp" x="-30%" y="-5%" width="160%" height="110%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.011 0.05" numOctaves="1" seed="4" result="n"/>
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="28" xChannelSelector="R" yChannelSelector="G"/>
+          <feGaussianBlur stdDeviation="1"/>
         </filter>
         <!-- directional wipe: the moving edge is a pair of animated gradient
              stops, so the feather stays a constant ~12% of the trail height

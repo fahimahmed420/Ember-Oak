@@ -5,39 +5,10 @@
  * "am I over a wick?" each frame; taps ask the same on touch devices. Lit state
  * is sticky — candles stay lit until the closing "gust" blows them all out.
  */
-import { candleSVG } from './assets.js';
+import { vesselSVG } from './assets.js';
 
 const registry = [];
 let idSeq = 0;
-
-/** Build a candle element and register its wick hot-zone. */
-export function createCandle(opts = {}) {
-  const { hue = 32, scale = 1, className = '', role = null } = opts;
-  const el = document.createElement('div');
-  el.className = `candle ${className}`.trim();
-  el.style.setProperty('--candle-scale', scale);
-  el.innerHTML = candleSVG({ hue });
-  el.dataset.lit = 'false';
-
-  const record = {
-    id: ++idSeq,
-    el,
-    role,
-    lit: false,
-    wickEl: el.querySelector('[data-wick]'),
-    flameEl: el.querySelector('[data-flame-target]'),
-    glowEl: el.querySelector('[data-glow]'),
-    onIgnite: opts.onIgnite || null,
-  };
-  registry.push(record);
-
-  // Touch fallback: tap to light (no persistent cursor on touch devices).
-  el.addEventListener('pointerdown', (e) => {
-    if (e.pointerType === 'touch' || e.pointerType === 'pen') ignite(record);
-  });
-
-  return { el, record };
-}
 
 /**
  * Image-based candle: real artwork instead of the placeholder SVG, with an
@@ -54,6 +25,48 @@ export function createImageCandle(opts = {}) {
     <img class="candle--image__img" src="${src}" alt="${alt}" draggable="false" decoding="async" />
     <span class="candle__wickzone" data-wick style="left:${wickX};top:${wickY}"></span>
     <div class="flame" data-flame-target style="left:calc(${wickX} - 24px);top:calc(${wickY} - 86px)">
+      <div class="flame__glow" data-glow></div>
+      <div class="flame__outer"></div>
+      <div class="flame__mid"></div>
+      <div class="flame__core"></div>
+      <div class="flame__base"></div>
+    </div>`;
+
+  const record = {
+    id: ++idSeq,
+    el,
+    role,
+    lit: false,
+    wickEl: el.querySelector('[data-wick]'),
+    flameEl: el.querySelector('[data-flame-target]'),
+    glowEl: el.querySelector('[data-glow]'),
+    onIgnite,
+  };
+  registry.push(record);
+
+  el.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'touch' || e.pointerType === 'pen') ignite(record);
+  });
+
+  return { el, record };
+}
+
+/**
+ * Vessel candle: an inline SVG container (glass/tin + wax, no wick/flame) from
+ * `vesselSVG`, topped with the same realistic layered CSS flame used on the
+ * closing candle — so every Collection product gets a distinct silhouette
+ * while sharing one proven, physically-animated fire.
+ */
+export function createVesselCandle(opts = {}) {
+  const { vessel, waxHue = 32, role = null, alt = '', onIgnite = null } = opts;
+  const { svg, wickY } = vesselSVG(vessel, { waxHue });
+  const el = document.createElement('div');
+  el.className = 'candle candle--vessel';
+  el.dataset.lit = 'false';
+  el.innerHTML = `
+    <div class="candle--vessel__art" role="img" aria-label="${alt}">${svg}</div>
+    <span class="candle__wickzone" data-wick style="left:50%;top:${wickY}"></span>
+    <div class="flame" data-flame-target style="left:calc(50% - 24px);top:calc(${wickY} - 86px)">
       <div class="flame__glow" data-glow></div>
       <div class="flame__outer"></div>
       <div class="flame__mid"></div>
@@ -136,10 +149,3 @@ export function gustBlowOut() {
   return count;
 }
 
-export function litCount() {
-  return registry.reduce((n, r) => n + (r.lit ? 1 : 0), 0);
-}
-
-export function totalCount() {
-  return registry.length;
-}
