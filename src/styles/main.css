@@ -851,41 +851,67 @@ main {
   border-color: var(--ember);
   color: var(--gold);
 }
+/* when the fuse rope is installed, it replaces the plain button */
+body.has-rope .to-top {
+  display: none;
+}
 
-/* Wind gust visual: curved streaks blow from button to candle */
+/* ============================================================
+   FUSE ROPE — physics-simulated wick hanging top-right;
+   light its end to burn your way back to the top
+   ============================================================ */
+.rope {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 8400; /* above content + nav, below the fire cursor */
+  overflow: visible;
+}
+
+/* ============================================================
+   WIND GUST — visible sweeping air lines + flame fighting the wind
+   ============================================================ */
 .wind-gust {
   position: fixed;
   inset: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
   z-index: 7999;
+  overflow: visible;
 }
 .wind-streak {
-  animation: windBlow 0.8s ease-out forwards;
+  fill: none;
+  stroke: rgba(214, 228, 255, 0.9);
+  stroke-linecap: round;
+  opacity: 0; /* nothing shows unless the animation runs */
+  filter: drop-shadow(0 0 6px rgba(200, 220, 255, 0.55));
+  /* pathLength=1 on the element: a 30%-long bright segment travels the curve */
+  stroke-dasharray: 0.3 0.7;
+  stroke-dashoffset: 0.3;
+  animation: windTravel 1.25s cubic-bezier(0.3, 0.5, 0.35, 1) forwards;
 }
-@keyframes windBlow {
-  0% { stroke-dasharray: 0 100; stroke-dashoffset: 0; opacity: 0; }
+@keyframes windTravel {
+  0% { stroke-dashoffset: 0.3; opacity: 0; }
   10% { opacity: 1; }
-  90% { opacity: 0.8; }
-  100% { stroke-dasharray: 100 0; stroke-dashoffset: 0; opacity: 0; }
+  75% { opacity: 0.9; }
+  100% { stroke-dashoffset: -1; opacity: 0; }
 }
 
-/* Flame violent flicker as gust hits */
-.is-gusting .flame__outer {
-  animation: flameGusted 0.7s ease-in-out !important;
+/* The flame bends hard away from the wind, flutters, and shrinks as it dies.
+   Applied to the container so it composes with the children's own flicker. */
+.is-gusting .candle--image .flame {
+  animation: flameBend 1s ease-in forwards;
 }
-.is-gusting .flame__mid {
-  animation: flameGusted 0.5s ease-in-out !important;
-}
-.is-gusting .flame__core {
-  animation: flameGusted 0.6s ease-in-out !important;
-}
-@keyframes flameGusted {
-  0% { transform: rotate(-45deg) scale(1, 1) translateY(0); opacity: 1; }
-  20% { transform: rotate(-55deg) scale(0.7, 1.3) translateY(-4px); opacity: 0.9; }
-  40% { transform: rotate(-35deg) scale(1.2, 0.8) translateY(2px); opacity: 0.7; }
-  60% { transform: rotate(-48deg) scale(0.6, 1.4) translateY(-2px); opacity: 0.4; }
-  85% { transform: rotate(-42deg) scale(0.3, 0.5) translateY(-6px); opacity: 0.1; }
-  100% { transform: rotate(-45deg) scale(0, 0) translateY(-10px); opacity: 0; }
+@keyframes flameBend {
+  0% { transform: skewX(0) scaleY(1); }
+  20% { transform: skewX(20deg) scaleY(0.9) translateX(5px); }
+  38% { transform: skewX(-9deg) scaleY(1.08) translateX(1px); }
+  55% { transform: skewX(28deg) scaleY(0.72) translateX(9px); }
+  72% { transform: skewX(14deg) scaleY(0.85) translateX(6px); }
+  100% { transform: skewX(36deg) scaleY(0.35) translateX(14px); }
 }
 
 /* ============================================================

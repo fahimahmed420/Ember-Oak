@@ -11,6 +11,9 @@
 import { cursorFlameSVG } from './assets.js';
 import { testHotZones } from './candles.js';
 
+/** Live eased flame position, readable by other modules (e.g. the rope fuse). */
+export const firePos = { x: 0, y: 0, active: false };
+
 export function initFireCursor({ reducedMotion }) {
   const root = document.getElementById('fireCursor');
   const flame = root?.querySelector('[data-flame]');
@@ -59,6 +62,11 @@ export function initFireCursor({ reducedMotion }) {
 
     // Wick detection uses the eased flame tip position.
     testHotZones(pos.x, pos.y - 10);
+
+    // Publish the eased position for other fire-reactive modules.
+    firePos.x = pos.x;
+    firePos.y = pos.y;
+    firePos.active = visible;
 
     requestAnimationFrame(frame);
   }
