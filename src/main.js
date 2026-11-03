@@ -109,6 +109,22 @@ runLoader().then(() => {
     setTimeout(() => svg.remove(), 2400);
   }
 
+  // Relight reward: after a gust, bringing the flame back to the closing
+  // candle blooms the room and swaps the caption. Resets on the next gust.
+  const closing = document.getElementById('closing');
+  const lede = document.querySelector('[data-closing-lede]');
+  let gusted = false;
+  document.addEventListener('candles:gust', () => {
+    gusted = true;
+    closing?.classList.remove('is-relit');
+    if (lede) lede.textContent = lede.dataset.textOut;
+  });
+  document.addEventListener('candle:lit', (e) => {
+    if (e.detail.role !== 'smoke-source' || !gusted) return;
+    closing?.classList.add('is-relit');
+    if (lede) lede.textContent = lede.dataset.textIn;
+  });
+
   // Dismiss the hero hint once the visitor lights their first candle.
   document.addEventListener(
     'candle:lit',

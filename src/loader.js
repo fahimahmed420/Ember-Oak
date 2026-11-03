@@ -30,6 +30,7 @@ export function runLoader() {
       const assetFrac = totalAssets ? loaded / totalAssets : 1;
       const pct = Math.floor(Math.min(timeFrac, assetFrac) * 100);
       if (pctEl) pctEl.textContent = pct;
+      loader.style.setProperty('--pct', (pct / 100).toFixed(3)); // the wax rises with the count
 
       if (pct >= 100) {
         loader.classList.add('is-ignited'); // flame pops on the loader candle

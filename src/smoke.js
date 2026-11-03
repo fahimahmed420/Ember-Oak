@@ -215,7 +215,7 @@ function hide() {
   gsap.set(root, { autoAlpha: 1 });
   gsap.to(wipe, {
     e: 0,
-    duration: 12,
+    duration: 16,
     ease: 'power1.in',
     onUpdate: () => applyWipe(wipe.e),
     onComplete: () => gsap.set(root, { autoAlpha: 0 }),
@@ -238,7 +238,7 @@ function show() {
   gsap.set(root, { autoAlpha: 1 });
   gsap.to(wipe, {
     e: 0, // edge climbs from bottom to top
-    duration: 11,
+    duration: 15,
     ease: 'power1.in',
     delay: 0.35,
     onUpdate: () => applyWipe(wipe.e),

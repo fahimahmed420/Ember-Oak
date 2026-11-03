@@ -14,12 +14,19 @@
     <title>Ember &amp; Oak — Hand-Poured Candles</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>🕯️</text></svg>" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Instrument+Sans:wght@400;500&display=swap"
+    />
   </head>
   <body>
     <!-- ============ LOADING SCREEN ============ -->
     <div class="loader" id="loader" aria-hidden="true">
       <div class="loader__inner">
-        <div class="loader__candle" data-loader-candle></div>
+        <div class="loader__candle" data-loader-candle>
+          <span class="loader__wax"></span>
+        </div>
         <div class="loader__count"><span id="loaderPct">0</span><span class="loader__pctmark">%</span></div>
         <p class="loader__label">warming the wax</p>
       </div>
@@ -116,25 +123,35 @@
       <section class="section collection" id="collection" data-section="Collection" data-index="3">
         <header class="collection__head">
           <p class="eyebrow">The Collection</p>
-          <h2>Five moods. Light the one you need.</h2>
+          <h2>Five hours of the day. Light the one you need.</h2>
+          <p class="collection__hint">Brush a wick with the flame to light it<span class="collection__hint-touch"> — or tap a candle</span>.</p>
         </header>
-        <div class="collection__grid" data-candle-field="collection"><!-- built by collection.js --></div>
+        <div class="shelf">
+          <div class="shelf__row" data-candle-field="collection"><!-- built by sections.js --></div>
+          <div class="shelf__plank" aria-hidden="true"></div>
+        </div>
       </section>
 
       <!-- ============ 5 · WHY IT MATTERS ============ -->
       <section class="section why" id="why" data-section="Why" data-index="4">
-        <header class="why__head">
-          <p class="eyebrow">Why It Matters</p>
-          <h2>Small choices, cleaner light.</h2>
-        </header>
-        <div class="why__grid" id="whyGrid"><!-- built by why.js --></div>
+        <div class="why__wrap">
+          <header class="why__head">
+            <p class="eyebrow">Why It Matters</p>
+            <h2>Small choices, <em>cleaner</em> light.</h2>
+            <p class="why__lede">Six things we refuse to compromise on, in the order they happen.</p>
+          </header>
+          <ol class="ledger" id="whyGrid"><!-- built by sections.js --></ol>
+        </div>
       </section>
 
       <!-- ============ 6 · OUR STORY ============ -->
       <section class="section story" id="story" data-section="Story" data-index="5">
+        <div class="story__vignette" aria-hidden="true"></div>
         <div class="story__wrap">
-          <p class="eyebrow">Our Story</p>
-          <h2 class="story__title">It started with one bad winter and a cheap candle.</h2>
+          <p class="eyebrow">Our Story · Est. 2016</p>
+          <blockquote class="story__quote">
+            <p>It started with one bad winter <em>and a cheap candle.</em></p>
+          </blockquote>
           <div class="story__body">
             <p>
               We wanted a light that felt like something — not a chemical bloom, not
@@ -145,8 +162,8 @@
               Ten years on, every candle is still poured in small batches by the
               same small crew. We name each one after the hour it's meant for.
             </p>
-            <p class="story__sign">— The Ember &amp; Oak crew</p>
           </div>
+          <p class="story__sign"><span class="story__rule" aria-hidden="true"></span>The Ember &amp; Oak crew</p>
         </div>
       </section>
 
@@ -166,8 +183,11 @@
             <span class="closing__gust-label">Blow it out</span>
           </button>
           <h2 class="closing__title">Thanks for lighting the way.</h2>
-          <p class="closing__lede">The smoke leads here — one flame just went out. Touch it to relight.</p>
+          <p class="closing__lede" data-closing-lede data-text-out="The smoke leads here — one flame just went out. Touch it to relight." data-text-in="Relit. The room warms again.">
+            The smoke leads here — one flame just went out. Touch it to relight.
+          </p>
         </div>
+        <div class="closing__bloom" aria-hidden="true"></div>
       </section>
     </main>
 

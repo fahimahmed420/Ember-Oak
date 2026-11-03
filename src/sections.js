@@ -51,60 +51,75 @@ export function buildClosingCandle() {
 }
 
 const PRODUCTS = [
-  { name: 'Six A.M.', vessel: 'tumbler', hue: 40, notes: 'Bergamot · Oat milk · Cedar', link: '#' },
-  { name: 'Amber Hour', vessel: 'apothecary', hue: 30, notes: 'Amber · Tonka · Dry hay', link: '#' },
-  { name: 'Rain Delay', vessel: 'bowl', hue: 150, notes: 'Petrichor · Vetiver · Moss', link: '#' },
-  { name: 'Last Call', vessel: 'tin', hue: 22, notes: 'Bourbon · Smoked vanilla · Oak', link: '#' },
-  { name: 'Midnight Oil', vessel: 'cylinder', hue: 250, notes: 'Black tea · Fig · Leather', link: '#' },
+  { name: 'Six A.M.', hour: '06:00', vessel: 'tumbler', hue: 40, notes: 'Bergamot · Oat milk · Cedar', burn: '48 h', link: '#' },
+  { name: 'Amber Hour', hour: '17:30', vessel: 'apothecary', hue: 30, notes: 'Amber · Tonka · Dry hay', burn: '60 h', link: '#' },
+  { name: 'Rain Delay', hour: '14:10', vessel: 'bowl', hue: 150, notes: 'Petrichor · Vetiver · Moss', burn: '40 h', link: '#' },
+  { name: 'Last Call', hour: '23:40', vessel: 'tin', hue: 22, notes: 'Bourbon · Smoked vanilla · Oak', burn: '55 h', link: '#' },
+  { name: 'Midnight Oil', hour: '01:15', vessel: 'cylinder', hue: 250, notes: 'Black tea · Fig · Leather', burn: '70 h', link: '#' },
 ];
 
-/** Product collection — distinct vessel per scent, each ignites via the shared fire-cursor mechanic. */
+/**
+ * Product collection — five vessels standing on one shelf. Each ignites via
+ * the shared fire-cursor mechanic (tap on touch); lighting one reveals its
+ * scent notes and burn time, and the label glows with its own wax colour.
+ */
 export function buildCollection() {
-  const grid = document.querySelector('[data-candle-field="collection"]');
-  if (!grid) return;
-  PRODUCTS.forEach((p) => {
-    const card = document.createElement('article');
-    card.className = 'product';
+  const row = document.querySelector('[data-candle-field="collection"]');
+  if (!row) return;
+  PRODUCTS.forEach((p, i) => {
+    const item = document.createElement('article');
+    item.className = 'shelf__item';
+    item.style.setProperty('--wax-h', p.hue);
     const { el } = createVesselCandle({
       vessel: p.vessel,
       waxHue: p.hue,
-      className: 'product__candle',
       alt: `${p.name} candle`,
-      onIgnite: () => card.classList.add('is-revealed'),
+      onIgnite: () => item.classList.add('is-revealed'),
     });
-    el.classList.add('product__candle');
-    card.appendChild(el);
+    el.classList.add('shelf__candle');
+    const stage = document.createElement('div');
+    stage.className = 'shelf__stage';
+    stage.innerHTML = '<span class="shelf__pool" aria-hidden="true"></span>';
+    stage.appendChild(el);
+    item.appendChild(stage);
     const meta = document.createElement('div');
-    meta.className = 'product__meta';
+    meta.className = 'shelf__meta';
     meta.innerHTML = `
+      <p class="shelf__hour"><span class="shelf__num">${String(i + 1).padStart(2, '0')}</span>${p.hour}</p>
       <h3>${p.name}</h3>
-      <p class="product__notes">${p.notes}</p>
-      <a class="product__shop" href="${p.link}">Shop →</a>`;
-    card.appendChild(meta);
-    grid.appendChild(card);
+      <p class="shelf__notes">${p.notes}</p>
+      <p class="shelf__burn">${p.burn} burn · <a class="shelf__shop" href="${p.link}">Shop</a></p>`;
+    item.appendChild(meta);
+    row.appendChild(item);
   });
 }
 
+// Thin line glyphs, one per point. Drawn in currentColor so they take the ember tint.
+const G = (d) => `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
 const BENEFITS = [
-  { icon: '🌿', title: 'Natural wax', body: 'Soy & coconut blend — no paraffin, no soot.' },
-  { icon: '🔥', title: 'Clean burn', body: 'Cotton wick, tuned so it never tunnels.' },
-  { icon: '🕯️', title: 'Hand-poured', body: 'Small batches, poured and rested by hand.' },
-  { icon: '⏳', title: '55+ hour burn', body: 'A slow, even pool from first light to last.' },
-  { icon: '♻️', title: 'Refillable jar', body: 'Return the vessel, we re-pour it for less.' },
-  { icon: '☾', title: 'Mood, bottled', body: 'Scents named for the hour they belong to.' },
+  { title: 'Natural wax', body: 'A soy and coconut blend. No paraffin, no soot on the ceiling, no headache in the room.', glyph: G('<path d="M24 42c0-14 6-24 18-28-2 14-8 22-18 28Z"/><path d="M24 42c0-10-4-18-14-22 2 10 6 16 14 22Z"/><path d="M24 42V30"/>') },
+  { title: 'Clean burn', body: 'One cotton wick, sized to the vessel, so the pool reaches the glass every time and never tunnels.', glyph: G('<path d="M24 8c6 8 9 13 9 19a9 9 0 0 1-18 0c0-6 3-11 9-19Z"/><path d="M24 24c2 3 3 5 3 7a3 3 0 0 1-6 0c0-2 1-4 3-7Z"/><path d="M14 42h20"/>') },
+  { title: 'Hand-poured', body: 'Small batches, poured at low heat and rested until the surface sets glass-smooth.', glyph: G('<path d="M10 16h14l6 4h8v4H10Z"/><path d="M26 24v6"/><path d="M14 30h24v10a2 2 0 0 1-2 2H16a2 2 0 0 1-2-2Z"/>') },
+  { title: '55+ hour burn', body: 'A slow, even pool from the first light to the last. Rated by lighting them ourselves, not by formula.', glyph: G('<path d="M14 6h20M14 42h20"/><path d="M16 6c0 10 8 14 8 18s-8 8-8 18M32 6c0 10-8 14-8 18s8 8 8 18"/><path d="M20 34h8"/>') },
+  { title: 'Refillable jar', body: 'Send the empty vessel back, or drop it at the studio. We re-pour it for less than the price of a new one.', glyph: G('<path d="M34 14a14 14 0 1 0 4 10"/><path d="M38 8v8h-8"/>') },
+  { title: 'Mood, bottled', body: 'Each scent is named for the hour it belongs to. Light the one that matches where your day is.', glyph: G('<path d="M30 8a16 16 0 1 0 10 26A14 14 0 0 1 30 8Z"/><path d="M12 10l1 3 3 1-3 1-1 3-1-3-3-1 3-1Z"/>') },
 ];
 
+/** "Why it matters" as an editorial ledger: big numerals, hairline rules, one glyph per point. */
 export function buildWhyGrid() {
-  const grid = document.getElementById('whyGrid');
-  if (!grid) return;
-  BENEFITS.forEach((b) => {
-    const card = document.createElement('article');
-    card.className = 'benefit';
-    card.innerHTML = `
-      <span class="benefit__icon" aria-hidden="true">${b.icon}</span>
-      <h3>${b.title}</h3>
-      <p>${b.body}</p>`;
-    grid.appendChild(card);
+  const list = document.getElementById('whyGrid');
+  if (!list) return;
+  BENEFITS.forEach((b, i) => {
+    const row = document.createElement('li');
+    row.className = 'ledger__row benefit';
+    row.innerHTML = `
+      <span class="ledger__num" aria-hidden="true">${String(i + 1).padStart(2, '0')}</span>
+      <span class="ledger__glyph">${b.glyph}</span>
+      <div class="ledger__text">
+        <h3>${b.title}</h3>
+        <p>${b.body}</p>
+      </div>`;
+    list.appendChild(row);
   });
 }
 

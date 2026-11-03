@@ -27,6 +27,7 @@ export function initScroll({ reducedMotion }) {
   processSequence();
   insidePeel();
   benefitStagger();
+  shelfStagger();
   storyReveal();
 
   ScrollTrigger.refresh();
@@ -140,6 +141,20 @@ function benefitStagger() {
   });
 }
 
+/* ---- Collection: candles rise onto the shelf one by one ---- */
+function shelfStagger() {
+  const items = gsap.utils.toArray('.shelf__item');
+  if (!items.length) return;
+  gsap.from(items, {
+    autoAlpha: 0,
+    y: 36,
+    duration: 0.7,
+    stagger: 0.1,
+    ease: 'power2.out',
+    scrollTrigger: { trigger: '.shelf', start: 'top 78%' },
+  });
+}
+
 function storyReveal() {
   gsap.from('.story__wrap > *', {
     autoAlpha: 0,
@@ -165,7 +180,7 @@ function initReducedMotion() {
     { threshold: 0.15 }
   );
   document
-    .querySelectorAll('.process__step, .benefit, .story__wrap > *, [data-inside-layer], [data-layer-label]')
+    .querySelectorAll('.process__step, .benefit, .shelf__item, .story__wrap > *, [data-inside-layer], [data-layer-label]')
     .forEach((el) => {
       el.style.opacity = '1'; // ensure everything is visible/readable
       io.observe(el);
