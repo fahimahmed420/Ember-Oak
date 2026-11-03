@@ -7,6 +7,7 @@ import { initSmoke } from './smoke.js';
 import { initHeroLight } from './heroLight.js';
 import { initDustMotes } from './dust.js';
 import { gustBlowOut } from './candles.js';
+import { initDemoPill } from './demoPill.js';
 import {
   buildClosingCandle,
   buildCollection,
@@ -115,3 +116,5 @@ runLoader().then(() => {
     { once: true }
   );
 });
+
+initDemoPill();
