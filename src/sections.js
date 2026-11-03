@@ -51,11 +51,11 @@ export function buildClosingCandle() {
 }
 
 const PRODUCTS = [
-  { name: 'Six A.M.', hour: '06:00', vessel: 'tumbler', hue: 40, notes: 'Bergamot · Oat milk · Cedar', burn: '48 h', link: '#' },
-  { name: 'Amber Hour', hour: '17:30', vessel: 'apothecary', hue: 30, notes: 'Amber · Tonka · Dry hay', burn: '60 h', link: '#' },
-  { name: 'Rain Delay', hour: '14:10', vessel: 'bowl', hue: 150, notes: 'Petrichor · Vetiver · Moss', burn: '40 h', link: '#' },
-  { name: 'Last Call', hour: '23:40', vessel: 'tin', hue: 22, notes: 'Bourbon · Smoked vanilla · Oak', burn: '55 h', link: '#' },
-  { name: 'Midnight Oil', hour: '01:15', vessel: 'cylinder', hue: 250, notes: 'Black tea · Fig · Leather', burn: '70 h', link: '#' },
+  { name: 'Six A.M.', hour: '06:00', vessel: 'tumbler', hue: 40, notes: 'Bergamot · Oat milk · Cedar', burn: '48 h'},
+  { name: 'Amber Hour', hour: '17:30', vessel: 'apothecary', hue: 30, notes: 'Amber · Tonka · Dry hay', burn: '60 h'},
+  { name: 'Rain Delay', hour: '14:10', vessel: 'bowl', hue: 150, notes: 'Petrichor · Vetiver · Moss', burn: '40 h'},
+  { name: 'Last Call', hour: '23:40', vessel: 'tin', hue: 22, notes: 'Bourbon · Smoked vanilla · Oak', burn: '55 h'},
+  { name: 'Midnight Oil', hour: '01:15', vessel: 'cylinder', hue: 250, notes: 'Black tea · Fig · Leather', burn: '70 h'},
 ];
 
 /**
@@ -88,7 +88,7 @@ export function buildCollection() {
       <p class="shelf__hour"><span class="shelf__num">${String(i + 1).padStart(2, '0')}</span>${p.hour}</p>
       <h3>${p.name}</h3>
       <p class="shelf__notes">${p.notes}</p>
-      <p class="shelf__burn">${p.burn} burn · <a class="shelf__shop" href="${p.link}">Shop</a></p>`;
+      <p class="shelf__burn">${p.burn} burn · <span class="shelf__shop">Refillable</span></p>`;
     item.appendChild(meta);
     row.appendChild(item);
   });
